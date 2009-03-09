@@ -7,9 +7,10 @@ Group:		Sciences/Mathematics
 License:	GPL
 Summary:	Mordell-Weil groups of elliptic curves over Q via 2-descent
 Version:	0.20080720
-Release:	1
+Release:	%mkrel 1
 Source:		http://www.warwick.ac.uk/~masgaj/ftp/progs/mwrank-2008-07-20.tgz
 URL:		http://www.warwick.ac.uk/~masgaj/mwrank/index.html
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 BuildRequires:	gcc-c++
 BuildRequires:	libgmp-devel
