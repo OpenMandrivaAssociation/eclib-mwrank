@@ -14,7 +14,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 BuildRequires:	gcc-c++
 BuildRequires:	libgmp-devel
-BuildRequires:	libntl-devel
+BuildRequires:	ntl-devel
 BuildRequires:	libpari-devel
 
 %description
