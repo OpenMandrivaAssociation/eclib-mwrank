@@ -1,14 +1,16 @@
 %define name		eclib-mwrank
-%define libname		%mklibname -d mwrank
-%define mwrankdir	%{_datadir}/%{name}
+%define eclibdir	%{_datadir}/%{name}
+%define libname		%mklibname -d eclib
 
 Name:		%{name}
 Group:		Sciences/Mathematics
 License:	GPL
 Summary:	Mordell-Weil groups of elliptic curves over Q via 2-descent
 Version:	0.20080720
-Release:	%mkrel 1
-Source:		http://www.warwick.ac.uk/~masgaj/ftp/progs/mwrank-2008-07-20.tgz
+Release:	%mkrel 2
+# The name is not a full date, only year, but version 310...
+# for now, keep the versioning before changing to use version in sage tarball
+Source:		eclib-20080310.p7.tar.bz2
 URL:		http://www.warwick.ac.uk/~masgaj/mwrank/index.html
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
@@ -45,35 +47,40 @@ ratpoint:
 Group:		Development/C
 License:	GPL
 Summary:	Development files for %{name}
+Obsoletes:	%mklibname -d mwrank
 
 %description	-n %{libname}
 Development header files and libraries for %{name}.
 
 %prep
-%setup -q -n mwrank-2008-07-20
+%setup -q -n eclib-20080310.p7
 
 %build
-BASE=%{_prefix} %configure --with-pari=%{_prefix} --with-ntl_all=%{_prefix}
-
-%ifnarch %{ix86}
-perl -pi -e 's|/lib|/%{_lib}|;' Makefile
-%endif
-
-%make
+cd src
+make	NTL_PREFIX=%{_prefix}	\
+	PARI_PREFIX=%{_prefix}	\
+	PICFLAG=-fPIC		\
+	all so
 
 %install
+cd src
 mkdir -p %{buildroot}%{_libdir}
-make PREFIX=%{buildroot}%{_prefix} install
+cp -fa lib/*.so %{buildroot}%{_libdir}
+
+mkdir -p %{buildroot}%{_includedir}/eclib
+cp -far include/* %{buildroot}%{_includedir}/eclib
 
 # create a link to the most important binary in bindir.
-mkdir -p %{buildroot}%{mwrankdir}/bin
+mkdir -p %{buildroot}%{eclibdir}/bin
 mkdir -p %{buildroot}%{_bindir}
-cp -fa mwrank conductor tate torsion indep findinf allisog twist ratpoint \
-	%{buildroot}%{mwrankdir}/bin
-ln -sf %{mwrankdir}/bin/mwrank %{buildroot}/%{_bindir}/mwrank
+cp -fa	qrank/{mwrank,ratpoint}						\
+	qcurves/{allisog,conductor,indep,findinf,tate,torsion,twist}	\
+	procs/tconic							\
+	%{buildroot}%{eclibdir}/bin
+ln -sf %{eclibdir}/bin/mwrank %{buildroot}/%{_bindir}/mwrank
 
 # add an "easy" link to doc directory.
-ln -sf %{_docdir}/%{name} %{buildroot}/%{mwrankdir}/doc
+ln -sf %{_docdir}/%{name} %{buildroot}/%{eclibdir}/doc
 
 %clean
 rm -rf %{buildroot}
@@ -81,13 +88,13 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %{_bindir}/mwrank
-%{mwrankdir}/bin/*
-%{mwrankdir}/doc
-%doc mwrank.changes mwrank.doc mwrank.info mwrank.options mwrank.readme
-%doc README PRIMES
+%{eclibdir}/bin/*
+%{eclibdir}/doc
+%doc src/qrank/mwrank.changes src/qrank/mwrank.doc src/qrank/mwrank.info
+%doc src/qrank/mwrank.options src/qrank/mwrank.readme
 
 %files		-n %{libname}
 %defattr(-,root,root)
-%dir %{_includedir}/mwrank
-%{_includedir}/mwrank/*
-%{_libdir}/libmwrank.*
+%dir %{_includedir}/eclib
+%{_includedir}/eclib/*
+%{_libdir}/lib*.so
