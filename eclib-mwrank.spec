@@ -7,7 +7,7 @@ Group:		Sciences/Mathematics
 License:	GPL
 Summary:	Mordell-Weil groups of elliptic curves over Q via 2-descent
 Version:	0.20080720
-Release:	%mkrel 4
+Release:	%mkrel 5
 # The name is not a full date, only year, but version 310...
 # for now, keep the versioning before changing to use version in sage tarball
 Source:		eclib-20080310.p8.tar.bz2
