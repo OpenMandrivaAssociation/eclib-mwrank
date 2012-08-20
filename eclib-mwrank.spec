@@ -1,100 +1,85 @@
 %define name		eclib-mwrank
 %define eclibdir	%{_datadir}/%{name}
-%define libname		%mklibname -d eclib
+%define libeclib	%mklibname eclib 0
+%define libeclib_devel	%mklibname -d eclib
 
 Name:		%{name}
 Group:		Sciences/Mathematics
-License:	GPL
+License:	GPLv3+
 Summary:	Mordell-Weil groups of elliptic curves over Q via 2-descent
-Version:	0.20100711
-Release:	%mkrel 3
-Source:		eclib-20100711.tar.bz2
+Version:	0.20120428
+Release:	1
 URL:		http://www.warwick.ac.uk/~masgaj/mwrank/index.html
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
+Source:		http://sagemath.org/packages/standard/eclib-20120428.spkg
 
 BuildRequires:	gcc-c++
-BuildRequires:	libgmp-devel
+BuildRequires:	gmp-devel
 BuildRequires:	ntl-devel
 BuildRequires:	libpari-devel
 
 %description
-mwrank:
-    Computes Mordell-Weil groups of elliptic curves over Q via 2-descent.
-conductor:
-    Computes conductor of input curves.
-tate:
-    Computes conductor and local reduction data of input curves.
-torsion:
-    Computes torsion subgroup of input curves.
-indep:
-    Tests points for independence.
-findinf:
-    Search for points on a curve, followed by saturation. One can also
-  input known points so this can be used to saturate a known set of points.
-allisog:
-    Computes curves isogenous to input curves.
-twist:
-    Computes quadratic twists of input curves.
-ratpoint:
-    Search for points on a quartic y2=g(x) (viewed as a 2-cover of
-  its Jacobian) after testing for local solubility. Points found are
-  mapped to the Jacobian via the 2-covering map. This is intended
-  mainly for further processing of quartics output by mwrank.
+mwrank is a program written in C++ for computing Mordell-Weil groups of
+elliptic curves over Q via 2-descent. It is available as source code
+(licensed under GPL) in the eclib package. mwrank is now only distributed
+as part of eclib. eclib is also included in Sage, and for most potential
+users the easiest way to run mwrank is to install Sage (which also of
+course gives you much much more). I no longer provide a source code
+distribution of mwrank by itself: use eclib instead. Full source code
+for eclib is available from google code.
 
-%package	-n %{libname}
+%package	-n %{libeclib}
+Group:		Sciences/Mathematics
+License:	GPL
+Summary:	Run time libraries for %{name}
+Obsoletes:	%mklibname -d mwrank
+
+%description	-n %{libeclib}
+Run time libraries for %{name}.
+
+%package	-n %{libeclib_devel}
 Group:		Development/C
 License:	GPL
 Summary:	Development files for %{name}
 Provides:	eclib-devel = %{version}-%{release}
 Provides:	libeclib-devel = %{version}-%{release}
-Obsoletes:	%mklibname -d mwrank
+Requires:	%{libeclib} = %{version}-%{release}
 
-%description	-n %{libname}
+%description	-n %{libeclib_devel}
 Development header files and libraries for %{name}.
 
 %prep
-%setup -q -n eclib-20100711
+%setup -q -n eclib-20120428
 
 %build
-cd src
-make	NTL_PREFIX=%{_prefix}	\
-	PARI_PREFIX=%{_prefix}	\
-	PICFLAG=-fPIC		\
-	all so
+pushd src
+    %configure2_5x --disable-static --enable-shared --disable-allprogs
+    %make
+popd
 
 %install
-cd src
-mkdir -p %{buildroot}%{_libdir}
-cp -fa lib/*.so %{buildroot}%{_libdir}
+pushd src
+    %makeinstall_std
+    mkdir -p %{buildroot}%{_docdir}/eclib
+    cp -a AUTHORS COPYING ChangeLog NEWS README %{buildroot}%{_docdir}/eclib
+popd
 
-mkdir -p %{buildroot}%{_includedir}/eclib
-cp -far include/* %{buildroot}%{_includedir}/eclib
-
-# create a link to the most important binary in bindir.
-mkdir -p %{buildroot}%{eclibdir}/bin
-mkdir -p %{buildroot}%{_bindir}
-cp -fa	qrank/{mwrank,ratpoint}						\
-	qcurves/{allisog,conductor,indep,findinf,tate,torsion,twist}	\
-	procs/tconic							\
-	%{buildroot}%{eclibdir}/bin
-ln -sf %{eclibdir}/bin/mwrank %{buildroot}/%{_bindir}/mwrank
-
-# add an "easy" link to doc directory.
-ln -sf %{_docdir}/%{name} %{buildroot}/%{eclibdir}/doc
-
-%clean
-rm -rf %{buildroot}
+%check
+pushd src
+    make -C src check LD_LIBRARY_PATH=%{buildroot}%{_libdir}
+popd
 
 %files
-%defattr(-,root,root)
-%{_bindir}/mwrank
-%{eclibdir}/bin/*
-%{eclibdir}/doc
-%doc src/qrank/mwrank.changes src/qrank/mwrank.doc src/qrank/mwrank.info
-%doc src/qrank/mwrank.options src/qrank/mwrank.readme
+%{_bindir}/*
 
-%files		-n %{libname}
-%defattr(-,root,root)
-%dir %{_includedir}/eclib
-%{_includedir}/eclib/*
+%files		-n %{libeclib}
+%doc %dir %{_docdir}/eclib
+%doc %{_docdir}/eclib/AUTHORS
+%doc %{_docdir}/eclib/COPYING
+%doc %{_docdir}/eclib/ChangeLog
+%doc %{_docdir}/eclib/NEWS
+%doc %{_docdir}/eclib/README
+%{_libdir}/lib*.so.*
+
+%files		-n %{libeclib_devel}
+%{_includedir}/eclib
 %{_libdir}/lib*.so
