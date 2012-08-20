@@ -64,9 +64,7 @@ pushd src
 popd
 
 %check
-pushd src
-    make -C src check LD_LIBRARY_PATH=%{buildroot}%{_libdir}
-popd
+make -C src check LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 
 %files
 %{_bindir}/*
