@@ -1,14 +1,13 @@
-%define name		eclib-mwrank
-%define eclibdir	%{_datadir}/%{name}
-%define libeclib	%mklibname eclib 0
+%define major 0
+%define libeclib	%mklibname eclib %{major}
 %define libeclib_devel	%mklibname -d eclib
 
-Name:		%{name}
+Name:		eclib-mwrank
 Group:		Sciences/Mathematics
 License:	GPLv3+
 Summary:	Mordell-Weil groups of elliptic curves over Q via 2-descent
 Version:	0.20120428
-Release:	1
+Release:	2
 URL:		http://www.warwick.ac.uk/~masgaj/mwrank/index.html
 Source:		http://sagemath.org/packages/standard/eclib-20120428.spkg
 
@@ -31,7 +30,6 @@ for eclib is available from google code.
 Group:		Sciences/Mathematics
 License:	GPL
 Summary:	Run time libraries for %{name}
-Obsoletes:	%mklibname -d mwrank
 
 %description	-n %{libeclib}
 Run time libraries for %{name}.
@@ -69,15 +67,16 @@ make -C src check LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 %files
 %{_bindir}/*
 
-%files		-n %{libeclib}
+%files -n %{libeclib}
+%{_libdir}/lib*.so.%{major}*
+
+%files		-n %{libeclib_devel}
 %doc %dir %{_docdir}/eclib
 %doc %{_docdir}/eclib/AUTHORS
 %doc %{_docdir}/eclib/COPYING
 %doc %{_docdir}/eclib/ChangeLog
 %doc %{_docdir}/eclib/NEWS
 %doc %{_docdir}/eclib/README
-%{_libdir}/lib*.so.*
-
-%files		-n %{libeclib_devel}
 %{_includedir}/eclib
 %{_libdir}/lib*.so
+
