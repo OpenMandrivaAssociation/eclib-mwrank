@@ -7,7 +7,7 @@
 
 Name:		eclib-mwrank
 Version:	20120830
-Release:	1
+Release:	2
 Summary:	Library for Computations on Elliptic Curves
 Group:		Sciences/Mathematics
 License:	GPLv3+
@@ -29,8 +29,6 @@ Summary:	Library for Computations on Elliptic Curves
 # bogus but required for clean updates
 %rename		%{libold}
 %rename		%{libold2}
-%rename		eclib-devel
-%rename		libeclib-devel
 
 %description	-n %{libec}
 John Cremona's programs for enumerating and computating with elliptic
@@ -41,6 +39,8 @@ Group:		Development/C++
 Summary:	Development files for %{name}
 Requires:	%{libec} = %{EVRD}
 %rename		%{libold_devel}
+%rename		eclib-devel
+%rename		libeclib-devel
 
 %description	-n %{libec_devel}
 Development header files and libraries for %{name}.
