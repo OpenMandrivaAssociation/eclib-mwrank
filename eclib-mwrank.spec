@@ -7,7 +7,7 @@
 
 Name:		eclib-mwrank
 Version:	20120830
-Release:	6
+Release:	7
 Summary:	Library for Computations on Elliptic Curves
 Group:		Sciences/Mathematics
 License:	GPLv3+
