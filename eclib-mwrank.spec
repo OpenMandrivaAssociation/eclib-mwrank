@@ -1,18 +1,21 @@
 %define			with_allprogs 0
+%define major		2
 %define libold		%mklibname eclib 0
 %define libold_devel	%mklibname -d eclib
 %define libold2		%mklibname mwrank
-%define libec		%mklibname ec 0
+%define libec		%mklibname ec %major
 %define libec_devel	%mklibname -d ec
 
+%define _disable_lto 1
+
 Name:		eclib-mwrank
-Version:	20120830
-Release:	8
+Version:	20160720
+Release:	1
 Summary:	Library for Computations on Elliptic Curves
 Group:		Sciences/Mathematics
 License:	GPLv3+
 URL:		http://www.warwick.ac.uk/~masgaj/
-Source0: 	http://sagemath.org/packages/standard/eclib-%{version}.spkg
+Source0: 	https://github.com/JohnCremona/eclib/archive/v%{version}.tar.gz
 
 BuildRequires:	gmp-devel
 BuildRequires:	libtool
@@ -47,15 +50,14 @@ Development header files and libraries for %{name}.
 
 %prep
 %setup -q -n eclib-%{version}
-# do not want rpath
-pushd src
     rm -f ltmain.sh
     libtoolize
     autoreconf
-popd
 
 %build
-pushd src
+export CC=gcc
+export CXX=g++
+
     %configure \
 	--disable-static \
 	--enable-shared \
@@ -65,27 +67,24 @@ pushd src
 	--disable-allprogs
 %endif
     make %{?_smpflags}
-popd
 
 %install
-make DESTDIR=%{buildroot} -C src install
+make DESTDIR=%{buildroot} install
 rm -f %{buildroot}%{_libdir}/*.la
-cp -p src/AUTHORS src/COPYING src/NEWS src/README \
-    %{buildroot}%{_docdir}/eclib
 %if !%{with_allprogs}
-rm %{buildroot}%{_docdir}/eclib/progs.txt
+rm -rf %{buildroot}%{_docdir}/eclib
 %endif
 
 %check
-make -C src check LD_LIBRARY_PATH=%{buildroot}%{_libdir}
+make check LD_LIBRARY_PATH=%{buildroot}%{_libdir}
 
 %files
 %{_bindir}/mwrank
 %{_mandir}/man1/mwrank.1*
 
 %files		-n %{libec}
-%doc %{_docdir}/eclib
-%{_libdir}/libec.so.*
+%doc AUTHORS NEWS README README.md doc/mwrank
+%{_libdir}/libec.so.%{major}*
 
 %files		-n %{libec_devel}
 %{_includedir}/eclib
