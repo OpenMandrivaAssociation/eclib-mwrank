@@ -14,7 +14,7 @@ Release:	1
 Summary:	Library for Computations on Elliptic Curves
 Group:		Sciences/Mathematics
 License:	GPLv3+
-URL:		http://www.warwick.ac.uk/~masgaj/
+URL:		https://www.warwick.ac.uk/~masgaj/
 Source0: 	https://github.com/JohnCremona/eclib/archive/v%{version}.tar.gz
 
 BuildRequires:	gmp-devel
